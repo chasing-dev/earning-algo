@@ -100,6 +100,28 @@ var AvlTree = function(){
     return node;
   }
   /**
+   * 删除节点的平衡逻辑
+   * 
+   */
+  function balanceRemove(node){
+    // 计算平衡因子
+    var balanceFactor = heightNode(node.left) - heightNode(node.right);
+    // 左子树偏多，则右旋转
+    if(balanceFactor > 1){
+      node = rotate2R(node);
+    }else if(balanceFactor < -1){
+      node = rotate2L(node);
+    } else {
+      if(node.left !== null){
+        balanceRemove(node.left);
+      }
+      if(node.right !== null){
+        balanceRemove(node.right);
+      }
+    }
+    return node;
+  }
+  /**
    * 插入节点方法
    * @param {String | Number} key
    */
@@ -111,6 +133,49 @@ var AvlTree = function(){
       root = insert(root, key);
     }
   }
+    // 移除一个节点
+    var findMinNode = function(node){
+      while(node && node.left !== null){
+        node = node.left;
+      }
+      return node;
+    }
+    var removeNode = function(node, key){
+      if(node === null){
+        return null;
+      }
+      if(key < node.key){
+        node.left = removeNode(node.left, key);
+        return node;
+      } else if(key > node.key){
+        node.right = removeNode(node.right, key);
+        return node;
+      } else {
+        if(node.left === null && node.right === null){
+          node = null;
+          return node;
+        }
+        if(node.left === null){
+          node = node.right;
+          return node;
+        }
+        if(node.right === null){
+          node = node.left;
+          return node;
+        }
+        var aux = findMinNode(node.right);
+        node.key = aux.key;
+        node.right = removeNode(node.right, aux.key);
+        // 执行平衡操作
+        node = balanceRemove(node);
+        return node;
+      }
+    }
+    this.remove = function(key){
+      // console.log("!!");
+      // console.log(root);
+      root = removeNode(root, key);
+    }
   this.print = function(){
     console.log(root);
     console.log("******************************");
@@ -152,4 +217,9 @@ tree.insertNode(22);
 tree.insertNode(18);
 tree.insertNode(10);
 tree.insertNode(15);
+tree.insertNode(9);
+tree.remove(18);
+// tree.remove(44);
+tree.remove(55);
+tree.remove(33);
 tree.print();
