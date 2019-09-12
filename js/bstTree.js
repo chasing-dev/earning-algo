@@ -122,8 +122,10 @@ function BinarySearchTree(){
     }
     if(key < node.key){
       node.left = removeNode(node.left, key);
+	  return node;
     } else if(key > node.key){
       node.right = removeNode(node.right, key);
+	  return node;
     } else {
       if(node.left === null && node.right === null){
         node = null;
